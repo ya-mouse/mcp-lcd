@@ -1,29 +1,3 @@
-
-/*******************************************************************************
-* font
-* filename: /home/mouse/SW/ivolga/lcd-image-converter/impact.xml
-* name: Impact
-* family: WenQuanYi Micro Hei Mono
-* size: 24
-* style: Regular
-* included characters: -0123456789CLRTaefikorsuv°起飞
-* antialiasing: no
-* type: proportional
-* encoding: UTF-8
-* unicode bom: no
-*
-* preset name: Monochrome
-* data block size: 8 bit(s), uint8_t
-* RLE compression enabled: yes
-* conversion type: Monochrome, Edge 128
-* bits per pixel: 1
-*
-* preprocess:
-*  main scan direction: top_to_bottom
-*  line scan direction: backward
-*  inverse: yes
-*******************************************************************************/
-
 #include <HDL51001_ccf.h>
 
 #include "font.h"
