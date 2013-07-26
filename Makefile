@@ -7,14 +7,15 @@ PATH := ${PATH}:$(LCCDIR)
 LCC = mc-lcc
 LD = mc-ld
 
-CFLAGS = -Wa--arch=MCp0411100101
+LCCFLAGS  = -v -target=mcp -Wa--arch=MCp0411100101
+LCCFLAGS += -I$(MULTICLET_SDK)/include/MCp0411100101
 
 OBJ = util.o main.o
 
 OBJ += lcd-ili9320.o
 
 .c.o: $(OBJ)
-	$(LCC) -v -target=mcp $(CFLAGS) -I$(MULTICLET_SDK)/include/MCp0411100101 -c $<
+	$(LCC) $(LCCFLAGS) -c $<
 
 all: image.bin
 
