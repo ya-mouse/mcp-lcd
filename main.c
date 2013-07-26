@@ -4,7 +4,11 @@
 #include <uart.h>
 
 #include "lcd.h"
+#include "font.h"
 #include "util.h"
+
+extern const tImage multiclet;
+extern const tFont Impact36;
 
 //16 bit word (12 bits data + 4 control bits)
 
@@ -21,7 +25,26 @@ static void process_cmd(char *cmd)
     } else if (!strcmp(cmd, "lcd-print")) {
         uart_send_str("\r\n*** Not implemented *** ", UART3);
 //        uart_send_str(cmd+11, UART3);
-	LCD_DrawCircle(100, 100, 50, 0x7e0);
+        LCD_drawBMP(0, 0, 0xffff, 0x0, &multiclet);
+
+	FONT_draw_string("0123456789", 85, 130, 0xffff, 0x0000, &Impact36);
+
+		for (iv = 0; iv < 2; iv++)
+		{
+			int k;
+			LCD_DrawBar(23, 177 + 35 * iv,  1, 21, 0xffff);
+			for (k = 0; k < 5; k++)
+			{
+				LCD_DrawBar(25 + 43 * k, 180 + 35 * iv, 40, 15, iv ? 0xffe0 : 0xf800);
+				LCD_DrawBar(66 + 43 * k, 177 + 35 * iv,  1, 21, 0xffff);
+			}
+		}
+
+		LCD_WriteReg(0x50,0);       /* Set X Start */
+		LCD_WriteReg(0x51,239);	    /* Set X End */
+		LCD_WriteReg(0x52,0);	    /* Set Y Start */
+		LCD_WriteReg(0x53,319);	    /* Set Y End */
+//	LCD_DrawCircle(100, 100, 50, 0x7e0);
     }
 }
 

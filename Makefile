@@ -12,7 +12,7 @@ LCCFLAGS += -I$(MULTICLET_SDK)/include/MCp0411100101
 
 OBJ = util.o main.o
 
-OBJ += lcd-ili9320.o
+OBJ += lcd-ili9320.o font.o fnt_impact.o img-mc-mono-16.o
 
 .c.o: $(OBJ)
 	$(LCC) $(LCCFLAGS) -c $<

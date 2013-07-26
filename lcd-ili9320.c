@@ -8,7 +8,7 @@
 #define SPI_CS_LOW  SPI0->SS = 0x06
 #define SPI_CS_HI   SPI0->SS = 0x07
 
-static int SPI_WRITE(int data)
+int SPI_WRITE(int data)
 {
     SPI0->TX = ((uint32_t)data) << 24;
     while(SPI_ST_TIP(SPI0) == 1);
@@ -195,6 +195,93 @@ void LCD_SetPoint( unsigned int Xpos, unsigned int Ypos, unsigned int point)
 	LCD_WriteReg(0x0022,point);
 }
 
+#if 1
+void LCD_drawBMP(int x, int y, int fgColor, int bgColor, const tImage *image)
+{
+    int next = 0;
+    const uint32_t *pdata = (const uint32_t *) image->data;
+
+    int width;
+    int i, k, cnt, size;
+    int c, v;
+
+    /* Ограничиваем область вывода для ускорения вывода */
+	LCD_WriteReg(0x50,MAX_X - y - image->height - 1); // 80
+	LCD_WriteReg(0x51,MAX_X - y );
+	LCD_WriteReg(0x52,x);
+	LCD_WriteReg(0x53,x + image->width - 1); // 47
+	LCD_setCursor(MAX_X - y, x);
+
+        uart_send_str("\r\nh=", UART3);
+        uart_send_str(itoa(image->height, 10), UART3);
+        uart_send_str(" w=", UART3);
+        uart_send_str(itoa(image->width, 10), UART3);
+
+	LCD_WriteIndex(0x0022);
+
+ 	SPI_CS_LOW;
+	LCD_WriteDataStart();
+
+	size = image->width * image->height;
+
+#define NEXT_BYTE 						\
+		if (!next) 						\
+		{								\
+			c = (*pdata >> 8) & 0xff;	\
+		}								\
+		else							\
+		{								\
+			c = *pdata & 0xff;			\
+			pdata++;					\
+		}								\
+		next ^= 1
+
+	y = 0;
+	width = 0;
+	while (size > 0) {
+		NEXT_BYTE;
+		if (c > 128) {
+			cnt = c - 128;
+			for (i = 0; i < cnt; i++)
+			{
+				NEXT_BYTE;
+				if (width < 1) {
+					width = image->width;
+					y++;
+				}
+				for (k = 0; k < 8 && width > 0; k++, c <<= 1, size--, width--)
+				{
+					if ((c & 0x80) != 0)
+						LCD_WriteDataOnly(fgColor);
+					else
+						LCD_WriteDataOnly(bgColor);
+				}
+			}
+		} else {
+			cnt = c;
+			NEXT_BYTE;
+			for (i = 0; i < cnt; i++)
+			{
+				v = c;
+				if (width < 1) {
+					width = image->width;
+					y++;
+				}
+				for (k = 0; k < 8 && width > 0; k++, v <<= 1, size--, width--)
+				{
+					if ((v & 0x80) != 0)
+						LCD_WriteDataOnly(fgColor);
+					else
+						LCD_WriteDataOnly(bgColor);
+				}
+			}
+		}
+	}
+
+    SPI_CS_HI;
+}
+#endif
+
 #if 0
 void LCD_PlotLine( int y1, int x1, int y2, int x2 , unsigned int color, int len )
 {
@@ -311,6 +398,7 @@ void LCD_DrawLine( unsigned int x0, unsigned int y0, unsigned int x1, unsigned i
         LCD_SetPoint(x0,y0,color);
 	}
 }
+#endif
 
 void LCD_DrawBar(const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h, const unsigned int color)
 {
@@ -333,7 +421,6 @@ void LCD_DrawBar(const unsigned int x, const unsigned int y, const unsigned int 
 
 	SPI_CS_HI;
 }
-#endif
 
 void LCD_DrawCircle(unsigned int xMidPoint, unsigned int yMidPoint, int radius, unsigned int color)
 {
