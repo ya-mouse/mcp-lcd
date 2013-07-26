@@ -2,7 +2,7 @@
 
 #include "lcd.h"
 
-static const uint32_t image_data_multiclet[] = {
+static const uint32_t image_data_multiclet_mono[] = {
  0x3100,
  0x8110,
  0x2700,
@@ -1619,4 +1619,4 @@ static const uint32_t image_data_multiclet[] = {
  0x0900,
 };
 
-const tImage multiclet = { image_data_multiclet, 320, 125};
+const tImage multiclet_mono = { image_data_multiclet_mono, 320, 125};

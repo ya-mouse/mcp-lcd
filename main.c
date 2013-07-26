@@ -8,6 +8,7 @@
 #include "util.h"
 
 extern const tImage multiclet;
+extern const tImage multiclet_mono;
 extern const tFont Impact36;
 
 //16 bit word (12 bits data + 4 control bits)
@@ -25,7 +26,8 @@ static void process_cmd(char *cmd)
     } else if (!strcmp(cmd, "lcd-print")) {
         uart_send_str("\r\n*** Not implemented *** ", UART3);
 //        uart_send_str(cmd+11, UART3);
-        LCD_drawBMP(0, 0, 0xffff, 0x0, &multiclet);
+//        LCD_drawBMP(0, 0, 0xffff, 0x0, &multiclet_mono);
+        LCD_drawColorBMP(0, 0, &multiclet);
 
 	FONT_draw_string("0123456789", 85, 130, 0xffff, 0x0000, &Impact36);
 
@@ -118,7 +120,7 @@ void main()
     SPI_SSEN(SPI0, 1); //разрешаем сигналы СS для SPI0
     SPI_TWEN(SPI0, 0); //запрещаем трёхпроводный режим для SPI0
     SPI0->SS = 0x07; //выставляем сигнал CS в логическую единицу
-    SPI0->CR = 0x377F0000; //конфигурируем SPI0
+    SPI0->CR = 0x37710000; //конфигурируем SPI0
 
     GPIOD->OUT = ((uint32_t)0x00003000);
     uart_send_str("\r\nConfiguring LCD...\r\n", UART3);

@@ -7,12 +7,12 @@ PATH := ${PATH}:$(LCCDIR)
 LCC = mc-lcc
 LD = mc-ld
 
-LCCFLAGS  = -v -target=mcp -Wa--arch=MCp0411100101
+LCCFLAGS  = -v -target=mcp -Wa--arch=MCp0411100101 -Wp-V199901L -Wf-V199901L
 LCCFLAGS += -I$(MULTICLET_SDK)/include/MCp0411100101
 
 OBJ = util.o main.o
 
-OBJ += lcd-ili9320.o font.o fnt_impact.o img-mc-mono-16.o
+OBJ += lcd-ili9320.o font.o fnt_impact.o img-mc.o
 
 .c.o: $(OBJ)
 	$(LCC) $(LCCFLAGS) -c $<

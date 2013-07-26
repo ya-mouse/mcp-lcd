@@ -195,6 +195,70 @@ void LCD_SetPoint( unsigned int Xpos, unsigned int Ypos, unsigned int point)
 	LCD_WriteReg(0x0022,point);
 }
 
+void LCD_drawColorBMP(int x, int y, const tImage *image)
+{
+    int next = 0;
+    const uint32_t *pdata = (const uint32_t *) image->data;
+
+    int width;
+    int i, k, cnt, size;
+    int c, v;
+
+    /* Ограничиваем область вывода для ускорения вывода */
+	LCD_WriteReg(0x50,MAX_X - y - image->height - 1); // 80
+	LCD_WriteReg(0x51,MAX_X - y );
+	LCD_WriteReg(0x52,x);
+	LCD_WriteReg(0x53,x + image->width - 1); // 47
+	LCD_setCursor(MAX_X - y, x);
+
+        uart_send_str("\r\nh=", UART3);
+        uart_send_str(itoa(image->height, 10), UART3);
+        uart_send_str(" w=", UART3);
+        uart_send_str(itoa(image->width, 10), UART3);
+
+	LCD_WriteIndex(0x0022);
+
+ 	SPI_CS_LOW;
+	LCD_WriteDataStart();
+
+	size = image->width * image->height;
+
+#define NEXT_WORD 						\
+		if (!next) 						\
+		{								\
+			c = (*pdata >> 16) & 0xffff;	\
+		}								\
+		else							\
+		{								\
+			c = *pdata & 0xffff;			\
+			pdata++;					\
+		}								\
+		next ^= 1
+
+	y = 0;
+	width = 0;
+	while (size > 0) {
+		NEXT_WORD;
+		if (c > 0x8000) {
+			cnt = c - 0x8000;
+			for (i = 0; i < cnt; i++, size--)
+			{
+				NEXT_WORD;
+				LCD_WriteDataOnly(c);
+			}
+		} else {
+			cnt = c;
+			NEXT_WORD;
+			for (i = 0; i < cnt; i++, size--)
+			{
+				LCD_WriteDataOnly(c);
+			}
+		}
+	}
+
+    SPI_CS_HI;
+}
+
 #if 1
 void LCD_drawBMP(int x, int y, int fgColor, int bgColor, const tImage *image)
 {

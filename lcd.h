@@ -17,6 +17,7 @@ void LCD_WriteDataStart();
 void LCD_WriteDataOnly(int data);
 
 void LCD_drawBMP(int x, int y, int fgColor, int bgColor, const tImage *image);
+void LCD_drawColorBMP(int x, int y, const tImage *image);
 void LCD_DrawBar(const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h, const unsigned int color);
 void LCD_DrawCircle(unsigned int xMidPoint, unsigned int yMidPoint, int radius, unsigned int color);
 
