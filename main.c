@@ -29,7 +29,7 @@ static void process_cmd(char *cmd)
 //        LCD_drawBMP(0, 0, 0xffff, 0x0, &multiclet_mono);
         LCD_drawColorBMP(0, 0, &multiclet);
 
-	FONT_draw_string("0123456789", 85, 130, 0xffff, 0x0000, &Impact36);
+	FONT_draw_string("0123456789", 130, 130, 0xffff, 0x0000, &Impact36);
 
 		for (iv = 0; iv < 2; iv++)
 		{
@@ -46,7 +46,8 @@ static void process_cmd(char *cmd)
 		LCD_WriteReg(0x51,239);	    /* Set X End */
 		LCD_WriteReg(0x52,0);	    /* Set Y Start */
 		LCD_WriteReg(0x53,319);	    /* Set Y End */
-//	LCD_DrawCircle(100, 100, 50, 0x7e0);
+	for (iv = 0; iv < 10; iv++)
+		LCD_DrawCircle(MAX_X - 215, 300, 45-iv, 0x07e0);
     }
 }
 
