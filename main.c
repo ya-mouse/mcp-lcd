@@ -59,6 +59,8 @@ void cmd_update(void (*cmd_cb)(char *))
     switch (in)
     {
 	case '\r':
+		break;
+	case '\n':
 		if (cmd_pos > 0) {
 			memset(cmd_buf+cmd_pos, 0, sizeof(cmd_buf)-cmd_pos);
 			cmd_cb(cmd_buf);
@@ -76,7 +78,7 @@ void cmd_update(void (*cmd_cb)(char *))
 	default:
 //		if (!isprint(in))
 //			break;
-		uart_send_int(in, UART3);
+		UART_SEND_BYTE(in, UART3);
 		while(UART_FIFO_TX_EMPTY(UART3) == 0);
 		cmd_buf[cmd_pos++] = in;
 		if (cmd_pos == sizeof(cmd_buf)-1) {
@@ -118,8 +120,8 @@ void main()
     uart_send_str(" SPI0CR=", UART3);
     uart_send_str(itoa(SPI0->CR, 16), UART3);
 
-    SPI_SSEN(SPI0, 1); //разрешаем сигналы СS для SPI0
-    SPI_TWEN(SPI0, 0); //запрещаем трёхпроводный режим для SPI0
+//    SPI_SSEN(SPI0, 1); //разрешаем сигналы СS для SPI0
+//    SPI_TWEN(SPI0, 0); //запрещаем трёхпроводный режим для SPI0
     SPI0->SS = 0x07; //выставляем сигнал CS в логическую единицу
     SPI0->CR = 0x37710000; //конфигурируем SPI0
 
